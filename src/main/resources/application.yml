@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: quartztest
+  datasource:
+    url: jdbc:postgresql://localhost:5434/quartz_test-db
+    username: quartz_test-db-user
+    password: quartz_test-db-password
+  liquibase:
+    change-log: classpath:db/changelog/liquibase-changelog.xml
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: quartzScheduler
+            instanceId: AUTO
+          jobStore:
+            isClustered: true
+            clusterCheckinInterval: 20000
+            maxMisfiresToHandleAtATime: 1
+            txIsolationLevelSerializable: true
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            useProperties: false
+            tablePrefix: QRTZ_

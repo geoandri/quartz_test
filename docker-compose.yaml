@@ -1,0 +1,18 @@
+services:
+  database:
+    image: postgres:11
+    container_name: quartz_test
+    restart: on-failure
+    healthcheck:
+      test: "pg_isready --username=quartz_test-db-user -d quartz_test-db -q"
+      timeout: 10s
+      retries: 20
+    volumes:
+      - ./db-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db-data/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'quartz_test-db'
+      POSTGRES_USER: 'quartz_test-db-user'
+      POSTGRES_PASSWORD: 'quartz_test-db-password'
+    ports:
+      - '5434:5432'

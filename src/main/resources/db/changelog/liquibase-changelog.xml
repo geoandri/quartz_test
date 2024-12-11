@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="db/changelog/liquibase.quartz.init.xml"/>
+
+    <changeSet id="0" author="geoandri">
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION update_modified_column() RETURNS trigger
+			LANGUAGE plpgsql
+			AS $$
+            BEGIN
+			NEW.updated_at := CURRENT_TIMESTAMP;
+            RETURN NEW;
+            END;
+			$$;
+        </createProcedure>
+        <comment>Creates a procedure for auto updating the updated_at timestamp</comment>
+    </changeSet>
+    <changeSet id="1" author="geoandri">
+        <createTable tableName="sbom_processing_jobs">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="workspace_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+        <sql>
+            CREATE TRIGGER sbom_processing_jobs_update_trig BEFORE UPDATE ON sbom_processing_jobs FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+        </sql>
+    </changeSet>
+</databaseChangeLog>
