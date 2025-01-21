@@ -5,4 +5,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface TriggerRepository: JpaRepository<TriggerEntity, UUID>
+interface SbomJobRepository: JpaRepository<SbomJobEntity, UUID>{
+
+    fun findAllByStatus(status: String): List<SbomJobEntity>
+}

@@ -8,7 +8,7 @@ import java.util.*
 
 @DisallowConcurrentExecution
 class ProcessingJob(
-    private val triggerRepository: TriggerRepository
+    private val sbomJobRepository: SbomJobRepository
 ) : Job {
 
     companion object {
@@ -16,11 +16,14 @@ class ProcessingJob(
     }
 
     override fun execute(context: JobExecutionContext) {
-        val trigger = triggerRepository.findById(UUID.fromString(context.trigger.key.name)).get()
-        triggerRepository.save(trigger.copy("RUNNING"))
-        logger.info("Processing job for workspace ${context.mergedJobDataMap["workspaceId"]}")
-        Thread.sleep(10000)
-        triggerRepository.save(trigger.copy("COMPLETED"))
-        logger.info("Job finished for workspace ${context.mergedJobDataMap["workspaceId"]}")
+        val originalTriggerName = context.mergedJobDataMap.getString("originalTriggerName")
+
+        sbomJobRepository.findById(UUID.fromString(originalTriggerName)).ifPresent {
+            sbomJobRepository.save(it.copy("RUNNING"))
+            logger.info("Processing job for workspace ${it.workspaceId} with message: ${it.message}")
+            Thread.sleep(60000)
+            sbomJobRepository.save(it.copy("COMPLETED"))
+            logger.info("Job finished for workspace ${it.workspaceId} with message: ${it.message}")
+        }
     }
 }

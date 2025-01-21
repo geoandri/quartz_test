@@ -30,6 +30,9 @@
             <column name="status" type="TEXT">
                 <constraints nullable="false"/>
             </column>
+            <column name="message" type="text">
+                <constraints nullable="true"/>
+            </column>
             <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"></constraints>
             </column>
@@ -41,4 +44,25 @@
             CREATE TRIGGER sbom_processing_jobs_update_trig BEFORE UPDATE ON sbom_processing_jobs FOR EACH ROW EXECUTE FUNCTION update_modified_column();
         </sql>
     </changeSet>
+<!--    <changeSet id="2" author="geoandri">-->
+<!--        <sql>-->
+<!--            &#45;&#45; Create the function to update the sbom_processing_jobs table-->
+<!--            CREATE OR REPLACE FUNCTION update_sbom_processing_jobs() RETURNS trigger-->
+<!--            LANGUAGE plpgsql-->
+<!--            AS '-->
+<!--                        BEGIN-->
+<!--                        UPDATE sbom_processing_jobs-->
+<!--                        SET trigger_name = NEW.trigger_name-->
+<!--                        WHERE id = OLD.trigger_name;-->
+<!--                        RETURN NEW;-->
+<!--                        END;-->
+<!--            ';-->
+
+<!--            &#45;&#45; Create the trigger that calls the function on update of trigger_name in qtrz_triggers-->
+<!--            CREATE TRIGGER update_sbom_processing_jobs_trigger-->
+<!--                AFTER UPDATE OF trigger_name ON qrtz_triggers-->
+<!--                FOR EACH ROW-->
+<!--                EXECUTE FUNCTION update_sbom_processing_jobs();-->
+<!--        </sql>-->
+<!--    </changeSet>-->
 </databaseChangeLog>
