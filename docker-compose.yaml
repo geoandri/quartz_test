@@ -20,7 +20,7 @@ services:
       - '5434:5432'
 
   sbom-quartz1:
-    image: sbom-quartz:latest
+    image: sbom-quartz:dev
     environment:
       - ENV=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/quartz_test-db
@@ -28,7 +28,7 @@ services:
       - "8081:8080"
 
   sbom-quartz2:
-    image: sbom-quartz:latest
+    image: sbom-quartz:dev
     environment:
       - ENV=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/quartz_test-db

@@ -49,9 +49,13 @@ class JobController(
         val trigger = TriggerBuilder.newTrigger()
             .withIdentity("$jobId", jobDTORequest.workspaceId.toString())
             .forJob(jobKey)
-            .startNow()
             .usingJobData("originalTriggerName", "$jobId")
             .usingJobData("message", jobDTORequest.message)
+            .startNow()
+            .withSchedule(
+                SimpleScheduleBuilder.simpleSchedule()
+                    .withMisfireHandlingInstructionFireNow() // Immediately fire misfired triggers
+            )
             .build()
 
         quartzScheduler.scheduler.scheduleJob(trigger)
